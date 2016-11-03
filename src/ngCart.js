@@ -27,7 +27,7 @@ angular.module('ngCart', ['ngCart.directives'])
 
     }])
 
-    .service('ngCart', ['$rootScope', '$window', 'ngCartItem', 'store', function ($rootScope, $window, ngCartItem, store) {
+    .service('ngCart', ['$rootScope', '$window', 'ngCartItem', 'store', function ($rootScope, $window, $state, ngCartItem, store) {
 
         this.init = function(){
             this.$cart = {
@@ -37,6 +37,22 @@ angular.module('ngCart', ['ngCart.directives'])
                 items : []
             };
         };
+
+        /**
+         * This redirects the user to the configuration
+         * screen and loads the configuration saved to the system
+         */
+        this.loadProduct = function (product_id) {
+            $state.go('configurator', { id: product_id });
+        };
+
+        /**
+         * This redirects the user to the configuration
+         * screen and loads the configuration saved to the system
+         */
+        this.loadSalesBom = function (product_id) {
+            $state.go('salesbom', { id: product_id });
+        };          
 
         this.addItem = function (id, name, price, quantity, data) {
 
@@ -144,12 +160,31 @@ angular.module('ngCart', ['ngCart.directives'])
                 }
             });
             this.setCart(cart);
+            /**
+             * K.Thomas - 10/10/16
+             * Added the service to delete the product from Mongo
+             */
+            var prodPromise = $http.delete('/api/products/' + id);
+            prodPromise.then(function (payload) {
+                console.log(payload.data);
+            })              
             $rootScope.$broadcast('ngCart:itemRemoved', item);
             $rootScope.$broadcast('ngCart:change', {});
         };
 
         this.empty = function () {
-            
+            /**
+             * K.Thomas - 10/10/16
+             * Loop through the cart and 
+             * added the service to delete the product from Mongo
+             */
+            // var cart = this.getCart();
+            // angular.forEach(cart.items, function (item, index) {
+            //     var prodPromise = $http.delete('/api/products/' + item.getId());
+            //     prodPromise.then(function (payload) {
+            //         console.log(payload.data);
+            //     })
+            // });               
             $rootScope.$broadcast('ngCart:change', {});
             this.$cart.items = [];
             $window.localStorage.removeItem('cart');
