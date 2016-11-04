@@ -27,7 +27,7 @@ angular.module('ngCart', ['ngCart.directives'])
 
     }])
 
-    .service('ngCart', ['$rootScope', '$window', 'ngCartItem', 'store', function ($rootScope, $window, $state, ngCartItem, store) {
+     .service('ngCart', ['$rootScope', '$state', 'ngCartItem', 'store', '$http', function ($rootScope, $state, ngCartItem, store, $http) {
 
         this.init = function(){
             this.$cart = {
